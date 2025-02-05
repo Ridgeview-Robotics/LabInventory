@@ -1,0 +1,13 @@
+R_DEF: Internal format may change without notice
+local
+id check_in_button
+id check_out_button
+id image_view_1
+id image_view_2
+id item_brand
+id item_status
+id item_type
+id scan_button
+layout activity_main
+mipmap ic_launcher
+mipmap ic_launcher_round
