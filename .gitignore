@@ -79,3 +79,15 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+*.bin
+*.lock
+*.properties
+*.lock
+*.xml
+*.flat
+*.json
+*.txt
+*.apk
+*.bin
+*.jar
+*.json
