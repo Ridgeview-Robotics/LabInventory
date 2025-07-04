@@ -91,9 +91,3 @@ lint/tmp/
 *.bin
 *.jar
 *.json
-.gradle/8.9/executionHistory/executionHistory.lock
-.gradle/8.9/fileHashes/fileHashes.bin
-*.lock
-*.bin
-*.bin
-/.gradle
