@@ -1,3 +1,0 @@
-// InventoryApp/settings.gradle
-rootProject.name = "InventoryApp"
-include ':app'

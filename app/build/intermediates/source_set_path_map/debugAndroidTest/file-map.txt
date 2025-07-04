@@ -1,4 +1,0 @@
-com.example.labinventory.test.app-androidTest-0 C:\Users\willi\Documents\GitHub\Stuco\LabInventory\app\build\generated\res\resValues\androidTest\debug
-com.example.labinventory.test.app-mergeDebugAndroidTestResources-1 C:\Users\willi\Documents\GitHub\Stuco\LabInventory\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-com.example.labinventory.test.app-mergeDebugAndroidTestResources-2 C:\Users\willi\Documents\GitHub\Stuco\LabInventory\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-com.example.labinventory.test.app-merged_res-3 C:\Users\willi\Documents\GitHub\Stuco\LabInventory\app\build\intermediates\merged_res\debugAndroidTest
