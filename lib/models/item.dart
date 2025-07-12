@@ -5,7 +5,7 @@ class Item {
   final String status;
   final int usageHours;
   final String damageNotes;
-  final String location; // ✅ NEW FIELD
+  final String location;
 
   Item({
     required this.code,

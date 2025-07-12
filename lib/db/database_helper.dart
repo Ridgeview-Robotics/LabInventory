@@ -59,14 +59,9 @@ class DatabaseHelper {
       where: 'code = ?',
       whereArgs: [code],
     );
-
-    if (maps.isNotEmpty) {
-      return Item.fromMap(maps.first);
-    } else {
-      return null;
-    }
+    if (maps.isNotEmpty) return Item.fromMap(maps.first);
+    return null;
   }
-
 
   Future<int> updateItem(Item item) async {
     final db = await database;

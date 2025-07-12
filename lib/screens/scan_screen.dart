@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
 import '../db/database_helper.dart';
 import '../models/item.dart';
+import 'add_item_screen.dart';
 import 'item_detail_screen.dart';
 import 'home_screen.dart';
-import 'add_item_screen.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -31,18 +30,16 @@ class _ScanScreenState extends State<ScanScreen> {
 
   Future<void> handleDetect(BarcodeCapture capture) async {
     final barcode = capture.barcodes.first;
-    final code = barcode.rawValue ?? '---';
+    final code = barcode.rawValue ?? '';
 
-    // Stop the scanner to prevent duplicate scans
+    if (code.isEmpty || !mounted) return;
+
     controller.stop();
+    final existingItem = await DatabaseHelper.instance.getItemByCode(code);
 
-    final db = DatabaseHelper();
-    final existingItem = await db.getItemByCode(code);
-
-    if (!mounted) return; // Avoid using context if widget is disposed
+    if (!mounted) return;
 
     if (existingItem != null) {
-      // Navigate to detail screen if item exists
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -50,7 +47,6 @@ class _ScanScreenState extends State<ScanScreen> {
         ),
       );
     } else {
-      // Otherwise, navigate to AddItemScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -78,7 +74,7 @@ class _ScanScreenState extends State<ScanScreen> {
             children: [
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (_) => const HomeScreen()),
                   );

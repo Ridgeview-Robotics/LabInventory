@@ -1,7 +1,8 @@
+/// FILE: lib/screens/home_screen.dart
+
 import 'package:flutter/material.dart';
 import '../db/database_helper.dart';
 import '../models/item.dart';
-import 'scan_screen.dart';
 import 'item_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,45 +14,99 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Item> items = [];
+  String searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _loadItems();
+    loadItems();
   }
 
-  void _loadItems() async {
-    final loadedItems = await DatabaseHelper.instance.getAllItems();
-    setState(() => items = loadedItems);
+  Future<void> loadItems() async {
+    final data = await DatabaseHelper.instance.getAllItems();
+    setState(() => items = data);
   }
+
+  Future<void> deleteItem(String code) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Item'),
+        content: const Text('Are you sure you want to delete this item?'),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+          ElevatedButton(
+            child: const Text('Delete'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await DatabaseHelper.instance.deleteItem(code);
+      await loadItems();
+    }
+  }
+
+  List<Item> get filteredItems => items
+      .where((item) =>
+  item.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+      item.code.toLowerCase().contains(searchQuery.toLowerCase()) ||
+      item.location.toLowerCase().contains(searchQuery.toLowerCase()))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('All Items'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ScanScreen()),
+      appBar: AppBar(title: const Text('Inventory')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search by name, code, or location',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() => searchQuery = value);
+              },
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredItems.length,
+              itemBuilder: (context, index) {
+                final item = filteredItems[index];
+                return ListTile(
+                  title: Text(item.name),
+                  subtitle: Text('Code: ${item.code} | Location: ${item.location}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => deleteItem(item.code),
+                  ),
+                  onTap: () async {
+                    final dataChanged = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ItemDetailScreen(item: item),
+                      ),
+                    );
+                    if (dataChanged == true) {
+                      loadItems();
+                    }
+                  },
+
+                );
+              },
             ),
           ),
         ],
-      ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (_, i) => ListTile(
-          title: Text(items[i].name),
-          subtitle: Text('Code: ${items[i].code}'),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ItemDetailScreen(item: items[i]),
-            ),
-          ),
-        ),
       ),
     );
   }

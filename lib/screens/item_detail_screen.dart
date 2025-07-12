@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lab_inventory/screens/scan_screen.dart';
 import '../db/database_helper.dart';
 import '../models/item.dart';
 import 'home_screen.dart';
@@ -45,15 +46,29 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
     await DatabaseHelper.instance.updateItem(updatedItem);
     if (mounted) {
-      Navigator.pop(context, true); // Pass true indicating data changed
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Item Details')),
+      appBar: AppBar(
+        title: const Text('Item Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const ScanScreen()),
+                  (route) => false,
+            );
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
