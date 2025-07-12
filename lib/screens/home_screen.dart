@@ -1,6 +1,7 @@
 /// FILE: lib/screens/home_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:lab_inventory/screens/scan_screen.dart';
 import '../db/database_helper.dart';
 import '../models/item.dart';
 import 'item_detail_screen.dart';
@@ -62,7 +63,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Inventory')),
+      appBar: AppBar(
+        title: const Text('Inventory'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ScanScreen()),
+              );
+            },
+            child: const Text(
+              'SCANNER',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
