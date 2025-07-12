@@ -1,8 +1,7 @@
-/// FILE: lib/screens/add_item_screen.dart
-
 import 'package:flutter/material.dart';
 import '../db/database_helper.dart';
 import '../models/item.dart';
+import 'home_screen.dart';
 
 class AddItemScreen extends StatefulWidget {
   final String scannedCode;
@@ -14,15 +13,22 @@ class AddItemScreen extends StatefulWidget {
 
 class _AddItemScreenState extends State<AddItemScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController codeController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    codeController.text = widget.scannedCode;
+  }
 
   Future<void> saveNewItem() async {
     if (!_formKey.currentState!.validate()) return;
 
     final newItem = Item(
-      code: widget.scannedCode,
+      code: codeController.text,
       name: nameController.text,
       type: typeController.text,
       status: 'Checked In',
@@ -32,7 +38,9 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
 
     await DatabaseHelper.instance.insertItem(newItem);
-    if (mounted) Navigator.pop(context, true);
+    if (mounted) {
+      Navigator.pop(context, true); // Pass true indicating data changed
+    }
   }
 
   @override
@@ -45,8 +53,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              Text('Code: ${widget.scannedCode}', style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              TextFormField(
+                controller: codeController,
+                decoration: const InputDecoration(labelText: 'Code'),
+                validator: (val) => val == null || val.isEmpty ? 'Enter a code' : null,
+              ),
               TextFormField(
                 controller: nameController,
                 decoration: const InputDecoration(labelText: 'Item Name'),

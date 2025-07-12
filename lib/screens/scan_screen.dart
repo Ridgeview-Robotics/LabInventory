@@ -15,29 +15,42 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  bool _found = false;
+  late MobileScannerController controller;
 
-  void handleDetect(BuildContext context, BarcodeCapture capture) async {
-    if (_found) return;
+  @override
+  void initState() {
+    super.initState();
+    controller = MobileScannerController();
+  }
 
-    final code = capture.barcodes.first.rawValue;
-    if (code == null) return;
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
-    setState(() => _found = true);
+  Future<void> handleDetect(BarcodeCapture capture) async {
+    final barcode = capture.barcodes.first;
+    final code = barcode.rawValue ?? '---';
 
-    final item = await DatabaseHelper.instance.getItemByCode(code);
+    // Stop the scanner to prevent duplicate scans
+    controller.stop();
 
-    if (!context.mounted) return;
+    final db = DatabaseHelper();
+    final existingItem = await db.getItemByCode(code);
 
-    if (item != null) {
+    if (!mounted) return; // Avoid using context if widget is disposed
+
+    if (existingItem != null) {
+      // Navigate to detail screen if item exists
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => ItemDetailScreen(item: item),
+          builder: (_) => ItemDetailScreen(item: existingItem),
         ),
       );
     } else {
-      // Code not found — route to AddItemScreen
+      // Otherwise, navigate to AddItemScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -50,15 +63,13 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan Item')),
+      appBar: AppBar(title: const Text("Scan Item")),
       body: Column(
         children: [
           Expanded(
             child: MobileScanner(
-              controller: MobileScannerController(
-                detectionSpeed: DetectionSpeed.normal,
-              ),
-              onDetect: (capture) => handleDetect(context, capture),
+              controller: controller,
+              onDetect: handleDetect,
             ),
           ),
           const SizedBox(height: 16),

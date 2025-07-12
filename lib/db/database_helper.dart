@@ -6,9 +6,9 @@ class DatabaseHelper {
   static const _databaseName = 'inventory.db';
   static const _databaseVersion = 1;
 
-  DatabaseHelper._privateConstructor();
-  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-
+  DatabaseHelper._internal();
+  static final DatabaseHelper instance = DatabaseHelper._internal();
+  factory DatabaseHelper() => instance;
   static Database? _database;
 
   Future<Database> get database async {
@@ -54,12 +54,19 @@ class DatabaseHelper {
 
   Future<Item?> getItemByCode(String code) async {
     final db = await database;
-    final maps = await db.query('items', where: 'code = ?', whereArgs: [code]);
+    final maps = await db.query(
+      'items',
+      where: 'code = ?',
+      whereArgs: [code],
+    );
+
     if (maps.isNotEmpty) {
       return Item.fromMap(maps.first);
+    } else {
+      return null;
     }
-    return null;
   }
+
 
   Future<int> updateItem(Item item) async {
     final db = await database;
